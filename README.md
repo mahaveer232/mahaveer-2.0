@@ -80,6 +80,7 @@ Email     →  SMTP (Auto E-Challan Sender)
 |---|---|
 | ![Violations](screenshots/violations.png) | ![Challan](screenshots/challan.png) |
 
+NOTE:- If you cant able to see screenshot plz open the folder named screenshot there you can see the screenshot of project
 ---
 
 ## 📦 Installation & Setup
