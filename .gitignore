@@ -1,0 +1,69 @@
+# ===================================
+# Mahaveer 2.0 — .gitignore File
+# ===================================
+
+# Virtual Environment (KABHI MAT UPLOAD KARO)
+.venv/
+venv/
+env/
+ENV/
+
+# Python cache files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.pyw
+*.pyz
+
+# Logs (private)
+*.log
+debug.log
+
+# Large video/image test files
+*.mp4
+*.avi
+*.mov
+test_output.jpg
+
+# Pre-trained base model (publicly available from Ultralytics)
+yolov8n.pt
+yolov8s.pt
+yolov8m.pt
+yolov8l.pt
+yolov8x.pt
+
+# YOUR TRAINED MODEL — PROTECT YOUR IP!
+models/helmet_detection.pt
+
+# Database with actual data
+*.db
+*.sqlite3
+
+# Environment secrets / API keys
+.env
+.env.local
+secrets.py
+config_secret.py
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# IDE files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Jupyter notebooks checkpoints
+.ipynb_checkpoints/
+
+# Distribution / packaging
+dist/
+build/
+*.egg-info/
