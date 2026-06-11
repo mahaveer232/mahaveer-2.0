@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mahaveer 2.0 | AI Helmet Detection System</title>
+  <meta name="description"
+        content="AI-powered highway helmet detection, OCR number plate reading, and automated challan management system." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap"
+        rel="stylesheet" />
+  <link rel="stylesheet" href="/static/css/style.css" />
+</head>
+
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     SIDEBAR
+══════════════════════════════════════════════════════════════════════════ -->
+<aside class="sidebar" id="sidebar">
+
+  <!-- Logo -->
+  <div class="sidebar-logo">
+    <div class="logo-icon">🪖</div>
+    <div class="logo-text">
+      <span class="logo-title">Mahaveer</span>
+      <span class="logo-sub">2.0</span>
+    </div>
+  </div>
+
+  <!-- Nav -->
+  <nav class="sidebar-nav">
+    <button class="nav-btn active" id="nav-detection"
+            onclick="switchTab('detection')">
+      <span class="nav-icon">📹</span>
+      <span>Live Detection</span>
+    </button>
+    <button class="nav-btn" id="nav-database"
+            onclick="switchTab('database')">
+      <span class="nav-icon">🗄️</span>
+      <span>Vehicle DB</span>
+    </button>
+    <button class="nav-btn" id="nav-challans"
+            onclick="switchTab('challans')">
+      <span class="nav-icon">📋</span>
+      <span>Challans</span>
+      <span class="nav-badge" id="challan-badge">0</span>
+    </button>
+  </nav>
+
+  <!-- System status -->
+  <div class="sidebar-status">
+    <div class="status-row">
+      <span class="status-dot" id="status-dot"></span>
+      <span class="status-label" id="status-label">Idle</span>
+    </div>
+    <div class="status-fps" id="status-fps">—</div>
+  </div>
+
+</aside>
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     MAIN CONTENT
+══════════════════════════════════════════════════════════════════════════ -->
+<main class="main">
+
+  <!-- ── Top Header ──────────────────────────────────────────────────── -->
+  <header class="topbar">
+    <div class="topbar-left">
+      <h1 class="page-title">AI Highway Helmet Detection</h1>
+      <p class="page-sub">Real-time two-wheeler helmet monitoring &amp; challan system</p>
+    </div>
+    <div class="topbar-right">
+      <div class="rto-badge">🚔 RTO Highway Monitoring Cell</div>
+    </div>
+  </header>
+
+  <!-- ── Stats Row ───────────────────────────────────────────────────── -->
+  <section class="stats-row">
+    <div class="stat-card" id="sc-total">
+      <div class="stat-icon">👁️</div>
+      <div class="stat-info">
+        <div class="stat-value" id="stat-total">0</div>
+        <div class="stat-label">Total Detected</div>
+      </div>
+    </div>
+    <div class="stat-card helmet" id="sc-helmet">
+      <div class="stat-icon">✅</div>
+      <div class="stat-info">
+        <div class="stat-value" id="stat-helmet">0</div>
+        <div class="stat-label">Helmet Detected</div>
+      </div>
+    </div>
+    <div class="stat-card danger" id="sc-nohelmet">
+      <div class="stat-icon">🚨</div>
+      <div class="stat-info">
+        <div class="stat-value" id="stat-nohelmet">0</div>
+        <div class="stat-label">No Helmet</div>
+      </div>
+    </div>
+    <div class="stat-card email" id="sc-challans">
+      <div class="stat-icon">📧</div>
+      <div class="stat-info">
+        <div class="stat-value" id="stat-challans">0</div>
+        <div class="stat-label">Challans Sent</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════════
+       TAB: LIVE DETECTION
+  ═════════════════════════════════════════════ -->
+  <div class="tab-panel active" id="tab-detection">
+
+    <div class="detection-grid">
+
+      <!-- Video Panel -->
+      <section class="video-panel">
+        <div class="panel-header">
+          <div class="panel-title">
+            <span class="pulse-dot" id="stream-dot"></span>
+            Live Stream
+          </div>
+          <div class="panel-actions">
+            <!-- Source buttons -->
+            <button class="btn btn-primary" id="btn-sample"
+                    onclick="startSample()">
+              ▶ Load Sample Video
+            </button>
+            <label class="btn btn-secondary" id="btn-upload-label">
+              📁 Upload Video
+              <input type="file" id="upload-input" accept="video/*"
+                     onchange="uploadVideo(this)" hidden />
+            </label>
+            <button class="btn btn-secondary" id="btn-camera"
+                    onclick="startCamera()">
+              📷 Live Camera
+            </button>
+            <button class="btn btn-danger" id="btn-stop"
+                    onclick="stopFeed()" disabled>
+              ⏹ Stop
+            </button>
+          </div>
+        </div>
+
+        <!-- Video stream -->
+        <div class="video-wrap">
+          <img id="video-stream"
+               src="/video_feed"
+               alt="Video stream"
+               class="video-stream" />
+          <div class="video-overlay" id="video-overlay">
+            <div class="overlay-content">
+              <div class="overlay-icon">📹</div>
+              <p>Select a video source to begin detection</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Upload progress -->
+        <div class="upload-progress" id="upload-progress" style="display:none">
+          <div class="progress-bar">
+            <div class="progress-fill" id="progress-fill"></div>
+          </div>
+          <span class="progress-label" id="progress-label">Uploading…</span>
+        </div>
+      </section>
+
+      <!-- Violation Log Panel -->
+      <section class="violation-panel">
+        <div class="panel-header">
+          <div class="panel-title">🚨 Violation Log</div>
+          <button class="btn-clear" onclick="clearViolations()">Clear</button>
+        </div>
+
+        <div class="violation-list" id="violation-list">
+          <div class="empty-state" id="violation-empty">
+            <div style="font-size:2rem;margin-bottom:8px">🛡️</div>
+            <p>No violations detected yet.</p>
+            <p style="font-size:11px;opacity:.5;margin-top:4px">
+              Start a video feed to begin monitoring.
+            </p>
+          </div>
+        </div>
+      </section>
+
+    </div><!-- /detection-grid -->
+
+  </div><!-- /tab-detection -->
+
+  <!-- ════════════════════════════════════════════
+       TAB: VEHICLE DATABASE
+  ═════════════════════════════════════════════ -->
+  <div class="tab-panel" id="tab-database">
+
+    <div class="panel-header" style="margin-bottom:18px">
+      <div class="panel-title">🗄️ Registered Vehicle Database</div>
+      <button class="btn btn-secondary" onclick="loadVehicles()">🔄 Refresh</button>
+    </div>
+
+    <div class="table-wrap">
+      <table class="data-table" id="vehicle-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Plate Number</th>
+            <th>Owner Name</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Vehicle Model</th>
+            <th>Address</th>
+          </tr>
+        </thead>
+        <tbody id="vehicle-tbody">
+          <tr><td colspan="7" class="loading-cell">Loading…</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div><!-- /tab-database -->
+
+  <!-- ════════════════════════════════════════════
+       TAB: CHALLANS
+  ═════════════════════════════════════════════ -->
+  <div class="tab-panel" id="tab-challans">
+
+    <div class="panel-header" style="margin-bottom:18px">
+      <div class="panel-title">📋 Issued Challans</div>
+      <button class="btn btn-secondary" onclick="loadChallans()">🔄 Refresh</button>
+    </div>
+
+    <div class="table-wrap">
+      <table class="data-table" id="challan-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Plate Number</th>
+            <th>Owner</th>
+            <th>Email</th>
+            <th>Date &amp; Time</th>
+            <th>Violation</th>
+            <th>Email Sent</th>
+          </tr>
+        </thead>
+        <tbody id="challan-tbody">
+          <tr><td colspan="7" class="loading-cell">Loading…</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div><!-- /tab-challans -->
+
+</main><!-- /main -->
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     TOAST NOTIFICATION
+══════════════════════════════════════════════════════════════════════════ -->
+<div class="toast" id="toast"></div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     VIOLATION DETAIL MODAL
+══════════════════════════════════════════════════════════════════════════ -->
+<div class="modal-backdrop" id="modal-backdrop" onclick="closeModal()">
+  <div class="modal" onclick="event.stopPropagation()">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div class="modal-header">
+      <div class="modal-icon">🚨</div>
+      <h2 class="modal-title">Violation Details</h2>
+    </div>
+    <div class="modal-body" id="modal-body"></div>
+  </div>
+</div>
+
+<script src="/static/js/app.js"></script>
+</body>
+</html>
